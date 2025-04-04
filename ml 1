@@ -1,0 +1,21 @@
+def find_s_algorithm(examples):
+    # Initialize hypothesis with most specific values
+    hypothesis = examples[0][:-1]  # Exclude the label (last item)
+
+    for example in examples:
+        if example[-1].lower() == 'yes':  # Only consider positive examples
+            for i in range(len(hypothesis)):
+                if hypothesis[i] != example[i]:
+                    hypothesis[i] = '?'  # Generalize
+    return hypothesis
+
+
+#  Sample dataset: [attributes..., label]
+training_data = [
+    ['Sunny', 'Warm', 'Normal', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Warm', 'Same', 'Yes'],
+    ['Rainy', 'Cold', 'High', 'Strong', 'Warm', 'Change', 'No'],
+    ['Sunny', 'Warm', 'High', 'Strong', 'Cool', 'Change', 'Yes'],
+]
+hypothesis = find_s_algorithm(training_data)
+print("Final Hypothesis:", hypothesis)
