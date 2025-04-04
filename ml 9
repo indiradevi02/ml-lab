@@ -1,0 +1,47 @@
+import numpy as np
+import matplotlib.pyplot as plt
+# Create sample data with a non-linear relationship
+x = np.linspace(0, 10, 50)
+y = np.sin(x) + 0.5 * np.random.randn(50)
+def locally_weighted_regression(x_train, y_train, x_query, tau):
+    """
+    Performs locally weighted regression.
+
+    Args:
+        x_train: Training data input features.
+        y_train: Training data target values.
+        x_query: Query point input feature.
+        tau: Kernel bandwidth parameter.
+
+    Returns:
+        Predicted value for the query point.
+    """
+    # Create a weight matrix
+    weights = np.exp(-np.sum((x_train - x_query)**2, axis=1) / (2 * tau**2))
+
+    # Add a column of ones to x_train for the intercept term
+    x_train_with_intercept = np.hstack((np.ones((x_train.shape[0], 1)), x_train))
+
+    # Calculate the weighted least squares solution
+    W = np.diag(weights)
+    b = np.linalg.solve(x_train_with_intercept.T @ W @ x_train_with_intercept, x_train_with_intercept.T @ W @ y_train)
+
+    # Predict the value for the query point
+    x_query_with_intercept = np.hstack((1, x_query))
+    y_pred = x_query_with_intercept @ b
+
+    return y_pred
+    # Create a range of query points for plotting
+x_plot = np.linspace(0, 10, 100)
+y_pred = []
+for x_query in x_plot:
+    y_pred.append(locally_weighted_regression(x.reshape(-1, 1), y, x_query, 1))
+
+# Plot the original data and the LWLR predictions
+plt.scatter(x, y, label="Original Data")
+plt.plot(x_plot, y_pred, color="red", label="LWLR Prediction")
+plt.xlabel("x")
+plt.ylabel("y")
+plt.title("Locally Weighted Regression")
+plt.legend()
+plt.show()
