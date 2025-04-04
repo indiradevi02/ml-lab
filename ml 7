@@ -1,0 +1,37 @@
+import numpy as np
+
+def sigmoid(x):
+    return 1 / (1 + np.exp(-x))
+
+def sigmoid_derivative(x):
+    return x * (1 - x)
+
+class SimpleNN:
+    def __init__(self):
+        self.weights = np.random.uniform(-1, 1, (2, 1))
+        self.bias = np.random.uniform(-1, 1, (1, 1))
+        self.learning_rate = 0.5
+
+    def forward(self, X):
+        return sigmoid(np.dot(X, self.weights) + self.bias)
+
+    def train(self, X, y, epochs=1000):
+        for _ in range(epochs):
+            output = self.forward(X)
+            error = y - output
+            adjustment = error * sigmoid_derivative(output)
+            self.weights += X.T.dot(adjustment) * self.learning_rate
+            self.bias += np.sum(adjustment) * self.learning_rate
+
+    def predict(self, X):
+        return self.forward(X)
+
+X = np.array([[0, 0], [0, 1], [1, 0], [1, 1]])
+y = np.array([[0], [1], [1], [0]])
+
+nn = SimpleNN()
+nn.train(X, y, epochs=5000)
+
+print("Predictions:")
+for i in X:
+    print(f"Input: {i}, Output: {nn.predict(i)}")
