@@ -1,0 +1,35 @@
+import pandas as pd
+from sklearn.preprocessing import LabelEncoder, OneHotEncoder
+
+# Sample data
+data = {'Category': ['Apple', 'Banana', 'Apple', 'Orange', 'Banana', 'Orange', 'Apple']}
+df = pd.DataFrame(data)
+
+# 1. Categorical Encoding using LabelEncoder (integer encoding)
+label_encoder = LabelEncoder()
+df['Category_Encoded'] = label_encoder.fit_transform(df['Category'])
+
+# 2. One-Hot Encoding using pd.get_dummies()
+df_one_hot = pd.get_dummies(df['Category'], prefix='Category')
+
+# Merge the one-hot encoded columns back into the original dataframe
+df = pd.concat([df, df_one_hot], axis=1)
+
+print("Original DataFrame with Categorical Encoding and One-Hot Encoding using pd.get_dummies():")
+print(df)
+
+# Alternatively, you can also use sklearn's OneHotEncoder
+# Reshape the data to be 2D (required for OneHotEncoder)
+# The 'sparse' argument has been removed in newer versions of scikit-learn
+# It is no longer necessary to specify it.
+one_hot_encoder = OneHotEncoder(sparse_output=False) # Use sparse_output instead of sparse
+encoded_array = one_hot_encoder.fit_transform(df[['Category']])
+
+# Convert the result to a DataFrame and merge
+encoded_df = pd.DataFrame(encoded_array, columns=one_hot_encoder.categories_[0])
+
+# Concatenate the original DataFrame and the encoded DataFrame (do not add duplicated 'Category' column)
+df_final = pd.concat([df.drop('Category', axis=1), encoded_df], axis=1)
+
+print("\nDataFrame with One-Hot Encoding (using OneHotEncoder):")
+print(df_final)
